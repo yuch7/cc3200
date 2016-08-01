@@ -180,7 +180,7 @@ void main_loop() {
 			GPIO_IF_LedOff(MCU_GREEN_LED_GPIO);
 		}
 	}
-}
+}	
 
 
 int main() {
@@ -190,10 +190,9 @@ int main() {
 	PinMuxConfig();
 	LedInit();
 
-    lRetVal = osi_TaskCreate(main_loop, 
-    						 (signed char*)"main_loop", 
-                                OSI_STACK_SIZE, 
-                                NULL, SPAWN_TASK_PRIORITY, NULL );
+    lRetVal = osi_TaskCreate(main_loop, (signed char*)"main_loop", 
+                	OSI_STACK_SIZE, NULL, 1, NULL );
+    
     if(lRetVal < 0)
     {
     ERR_PRINT(lRetVal);
