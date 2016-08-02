@@ -38,7 +38,7 @@
 APPNAME=yuch
 
 #
-# The base directory for TivaWare.
+# The base directory for sdk
 #
 ROOT=./cc3200-sdk
 
@@ -47,13 +47,35 @@ ROOT=./cc3200-sdk
 #
 include ${ROOT}/tools/gcc_scripts/makedefs
 
-VPATH=${ROOT}/example/blinky
+VPATH=..
+VAPTH+=../..
+VPATH+=${ROOT}/inc
 VPATH+=${ROOT}/example/common
+VPATH+=${RTOS_SOURCE_DIR}
+VPATH+=${RTOS_SOURCE_DIR}/source
+VPATH+=${RTOS_SOURCE_DIR}/source/portable/MemMang
+VPATH+=${RTOS_SOURCE_DIR}/source/portable/GCC/ARM_CM4
+
+#
+# Additional Compiler Flags
+#
+# CFLAGS=-DUSE_FREERTOS
+
+#
+# The FreeRTOS base directory.
+#
+RTOS_SOURCE_DIR=${ROOT}/third_party/FreeRTOS
 
 #
 # Where to find header files that do not live in the source directory.
 #
-IPATH=${ROOT}/
+IPATH=..
+IPATH+=../..
+IPATH+=${RTOS_SOURCE_DIR}
+IPATH+=${RTOS_SOURCE_DIR}/source
+IPATH+=${RTOS_SOURCE_DIR}/source/include
+IPATH+=${RTOS_SOURCE_DIR}/source/portable/MemMang
+IPATH+=${RTOS_SOURCE_DIR}/source/portable/GCC/ARM_CM4
 IPATH+=${ROOT}/simplelink
 IPATH+=${ROOT}/simplelink/include
 IPATH+=${ROOT}/example/blinky

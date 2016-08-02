@@ -33,7 +33,7 @@ extern void (* const g_pfnVectors[])(void);
 #if defined(ewarm)
 extern uVectorEntry __vector_table;
 #endif
-#define OSI_STACK_SIZE 8192
+#define OSI_STACK_SIZE 2048
 // OsiTaskHandle g_PushButtonTask; 
 //*****************************************************************************
 //                 GLOBAL VARIABLES -- End
@@ -139,26 +139,34 @@ static void BoardInit(void) {
     PRCMCC3200MCUInit();
 }
 
+
+// Initialize LEDs
 void LedInit() {
 	GPIO_IF_LedConfigure(LED1|LED2|LED3);
 	GPIO_IF_LedOff(MCU_ALL_LED_IND);
 }
 
-void SW2_handler() {
-	val++;
-}
 
-void SW3_handler() {
+// SW2 handler, Increment Global variable
+void SW2Handler() {
 	val--;
+	//TODO handle critical section
 }
 
+//SW3 handler, Decrement global variable
+void SW3Handler() {
+	val++;
+	//TODO handle critical section
+}
+
+//Initialize buttons
 void ButtonInit() {
-	Button_IF_Init(SW2_handler,SW3_handler);
-	Button_IF_EnableInterrupt(SW2);
-	Button_IF_EnableInterrupt(SW3);
+	Button_IF_Init(SW2Handler,SW3Handler);
+	Button_IF_EnableInterrupt(SW2|SW3);
 }
 
-void main_loop() {
+// main task to loop
+void MainLoop() {
 
 	ButtonInit();
 
@@ -189,8 +197,9 @@ int main() {
 	BoardInit();
 	PinMuxConfig();
 	LedInit();
-
-    lRetVal = osi_TaskCreate(main_loop, (signed char*)"main_loop", 
+	
+	//create OS tasks
+    lRetVal = osi_TaskCreate(MainLoop, (signed char*)"MainLoop", 
                 	OSI_STACK_SIZE, NULL, 1, NULL );
     
     if(lRetVal < 0)
