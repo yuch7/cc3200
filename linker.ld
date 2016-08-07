@@ -1,7 +1,7 @@
 /*****************************************************************************
-* wlan_ap.ld
+* freertos_demo.ld
 *
-* GCC Linker script for wlan_ap application.
+* GCC Linker script for freertos_demo application.
 *
 * Copyright (C) 2014 Texas Instruments Incorporated - http://www.ti.com/ 
 * 
@@ -40,7 +40,7 @@ HEAP_SIZE = 0x00010000;
 
 MEMORY
 {
-    SRAM (rwx) : ORIGIN = 0x20004000, LENGTH = 0x0002C000
+    SRAM (rwx) : ORIGIN = 0x20004000, LENGTH = 0x00030000
 }
 
 SECTIONS
@@ -51,8 +51,8 @@ SECTIONS
         KEEP(*(.intvecs))
         *(.text*)
         *(.rodata*)
-    *(.ARM.extab* .gnu.linkonce.armextab.*)
-    . = ALIGN(8);
+        *(.ARM.extab* .gnu.linkonce.armextab.*)
+        . = ALIGN(8);
         _etext = .;
     } > SRAM
 
@@ -68,7 +68,7 @@ SECTIONS
     {
         _data = .;
         *(.data*)
-    . = ALIGN (8);
+        . = ALIGN (8);
         _edata = .;
     } > SRAM
 
@@ -82,11 +82,10 @@ SECTIONS
 
     .heap :
     {
-    _heap = .;
-    . = . + HEAP_SIZE;
-    . = ALIGN(8);
-    _eheap = .;
+        _heap = .;
+        . = . + HEAP_SIZE;
+        . = ALIGN(8);
+        _eheap = .;
 
     }
 }
-

@@ -33,8 +33,9 @@ extern void (* const g_pfnVectors[])(void);
 #if defined(ewarm)
 extern uVectorEntry __vector_table;
 #endif
-#define OSI_STACK_SIZE 2048
-// OsiTaskHandle g_PushButtonTask; 
+
+#define OSI_STACK_SIZE 4096
+OsiTaskHandle g_PushButtonTask; 
 //*****************************************************************************
 //                 GLOBAL VARIABLES -- End
 //*****************************************************************************
@@ -43,6 +44,7 @@ extern uVectorEntry __vector_table;
 //                      LOCAL FUNCTION DEFINITIONS                         
 //*****************************************************************************
 
+#ifdef USE_FREERTOS
 //*****************************************************************************
 // FreeRTOS User Hook Functions enabled in FreeRTOSConfig.h
 //*****************************************************************************
@@ -115,6 +117,8 @@ void vApplicationStackOverflowHook( OsiTaskHandle *pxTask,
     {
     }
 }
+#endif //USE_FREERTOS
+
 
 static void BoardInit(void) {
 /* In case of TI-RTOS vector table is initialize by OS itself */
@@ -140,6 +144,12 @@ static void BoardInit(void) {
 }
 
 
+//Push Button handler task
+void PushButtonHandler (void *pvParameters) {
+	while(1);
+}
+
+
 // Initialize LEDs
 void LedInit() {
 	GPIO_IF_LedConfigure(LED1|LED2|LED3);
@@ -159,18 +169,19 @@ void SW3Handler() {
 	//TODO handle critical section
 }
 
-//Initialize buttons
+//Initialize buttons & interrupt
 void ButtonInit() {
 	Button_IF_Init(SW2Handler,SW3Handler);
 	Button_IF_EnableInterrupt(SW2|SW3);
+
 }
 
 // main task to loop
-void MainLoop() {
+void MainLoop(void *pvParameters) {
 
 	ButtonInit();
 
-	while(1) {
+	for(;;) {
 	
 		if (val&1) {
 			GPIO_IF_LedOn(MCU_RED_LED_GPIO);
@@ -199,6 +210,16 @@ int main() {
 	LedInit();
 	
 	//create OS tasks
+	lRetVal = osi_TaskCreate(PushButtonHandler, 
+		(signed char*) "PushButtonHandler",
+		OSI_STACK_SIZE, NULL, 2, &g_PushButtonTask);
+
+	if(lRetVal < 0)
+    {
+    ERR_PRINT(lRetVal);
+    LOOP_FOREVER();
+    }
+
     lRetVal = osi_TaskCreate(MainLoop, (signed char*)"MainLoop", 
                 	OSI_STACK_SIZE, NULL, 1, NULL );
     
@@ -209,5 +230,10 @@ int main() {
     }
 
     osi_start();
+
+    for(;;) {
+
+    }
+
 	return 0;
 }

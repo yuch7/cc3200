@@ -8,5 +8,5 @@ Info : cc3200.cpu: hardware has 6 breakpoints, 4 watchpoints
 Info : accepting 'gdb' connection from pipe
 cc3200.cpu: target state: halted
 target halted due to debug-request, current mode: Thread 
-xPSR: 0x41000000 pc: 0x0000230c msp: 0x20003fd0
+xPSR: 0x41000000 pc: 0x00002310 msp: 0x20003fd0
 Info : dropped 'gdb' connection
